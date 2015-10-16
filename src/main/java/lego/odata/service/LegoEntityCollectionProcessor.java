@@ -66,9 +66,8 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
 		this.odata = odata;
 		this.serviceMetaData = serviceMetaData;
 		
-		Node node = nodeBuilder().client(true).node();
+		Node node = nodeBuilder().data(false).node();
 		this.client = node.client();
-		
 		
 	}
 
