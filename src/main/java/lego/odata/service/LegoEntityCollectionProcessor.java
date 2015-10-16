@@ -40,6 +40,7 @@ import org.apache.olingo.server.api.uri.UriResourceEntitySet;
 import org.apache.olingo.server.api.uri.queryoption.ExpandOption;
 import org.apache.olingo.server.api.uri.queryoption.FilterOption;
 import org.apache.olingo.server.api.uri.queryoption.OrderByOption;
+import org.apache.olingo.server.api.uri.queryoption.SelectItem;
 import org.apache.olingo.server.api.uri.queryoption.SelectOption;
 import org.apache.olingo.server.api.uri.queryoption.SkipOption;
 import org.apache.olingo.server.api.uri.queryoption.TopOption;
@@ -82,7 +83,7 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
 		*/			
 		Settings settings = ImmutableSettings.settingsBuilder()
 		        .put("cluster.name", elasticClusterName).build();
-		this.client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress("10.12.86.21", 9300));
+		this.client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress("127.0.0.1", 9300));
 		
 	}
 
@@ -137,6 +138,7 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
                 .prepareSearch(elasticIndex)
         //      .setTypes(fqName.getName())
                 .setQuery(queryBuilder);
+	    configureSearchQuery(requestBuilder, selectOption, orderByOption, skipOption, topOption);
 	    
 	    //configureSearchQuery(requestBuilder, selectOption,
         //        orderByOption, skipOption, topOption);
@@ -151,6 +153,23 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
 	        entityCollection.getEntities().add(entity);
 	    }
 	    return entityCollection;
+	}
+	
+	private void configureSearchQuery(SearchRequestBuilder requestBuilder, SelectOption selectOption, OrderByOption orderByOption, SkipOption skipOption, TopOption topOption){
+		if (selectOption!=null) {
+	        for (SelectItem selectItem : selectOption.getSelectItems()) {
+	            requestBuilder.addField(selectItem.getResourcePath()
+	                                      .getUriResourceParts().get(0).toString());
+	        }
+	    }
+
+	    if (topOption!=null) {
+	        requestBuilder.setSize(topOption.getValue());
+	    }
+
+	    if (skipOption!=null) {
+	        requestBuilder.setFrom(skipOption.getValue());
+	    }
 	}
 	
 	private URI createId(String id){
