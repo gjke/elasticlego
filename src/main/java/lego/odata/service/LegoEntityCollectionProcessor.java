@@ -60,7 +60,7 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
 	private OData odata;
 	private ServiceMetadata serviceMetaData;
 	private Client client;
-	private String elasticIndex = "lego";
+	private String elasticIndex = "events";
 	
 	public void init(OData odata, ServiceMetadata serviceMetaData) {
 		this.odata = odata;
@@ -118,7 +118,7 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
 	   
 	    SearchRequestBuilder requestBuilder = client
                 .prepareSearch(elasticIndex)
-                .setTypes(fqName.getName())
+        //      .setTypes(fqName.getName())
                 .setQuery(queryBuilder);
 	    
 	    //configureSearchQuery(requestBuilder, selectOption,
