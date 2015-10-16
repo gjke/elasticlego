@@ -70,7 +70,7 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
 		
 		
 		Node node = nodeBuilder()
-					.settings(ImmutableSettings.settingsBuilder().put("discovery.zen.ping.multicast.enabled", false).build())
+					.settings(ImmutableSettings.settingsBuilder().put("discovery.zen.ping.multicast.enabled", false).put("http.enabled", false).build())
 					.client(true)
 					.clusterName(elasticClusterName)
 					.node();
