@@ -46,6 +46,7 @@ import org.apache.olingo.server.api.uri.queryoption.TopOption;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
@@ -67,7 +68,11 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
 		this.odata = odata;
 		this.serviceMetaData = serviceMetaData;
 		
-		Node node = nodeBuilder().client(true).clusterName(elasticClusterName).node();
+		Node node = nodeBuilder()
+					.settings(ImmutableSettings.settingsBuilder().put("discovery.zen.ping.multicast.enabled", false))
+					.client(true)
+					.clusterName(elasticClusterName)
+					.node();
 		this.client = node.client();
 		
 	}
