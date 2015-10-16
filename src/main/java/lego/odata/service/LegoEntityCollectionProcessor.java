@@ -46,7 +46,10 @@ import org.apache.olingo.server.api.uri.queryoption.TopOption;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
@@ -64,17 +67,22 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
 	private String elasticIndex = "events";
 	private String elasticClusterName = "legodata";
 	
+	@SuppressWarnings("resource")
 	public void init(OData odata, ServiceMetadata serviceMetaData) {
 		this.odata = odata;
 		this.serviceMetaData = serviceMetaData;
 		
 		
+		/*
 		Node node = nodeBuilder()
 					.settings(ImmutableSettings.settingsBuilder().put("discovery.zen.ping.multicast.enabled", false).put("http.enabled", false).build())
 					.client(true)
 					.clusterName(elasticClusterName)
 					.node();
-		this.client = node.client();
+		*/			
+		Settings settings = ImmutableSettings.settingsBuilder()
+		        .put("cluster.name", elasticClusterName).build();
+		this.client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress("10.12.86.21", 9300));
 		
 	}
 
@@ -106,6 +114,8 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
 		  EntityCollectionSerializerOptions opts = EntityCollectionSerializerOptions.with().id(id).contextURL(contextUrl).build();
 		  SerializerResult serializedContent = serializer.entityCollection(serviceMetaData, edmEntityType, entitySet, opts);
 
+		  this.client.close();
+		  
 		  // Finally: configure the response object: set the body, headers and status code
 		  response.setContent(serializedContent.getContent());
 		  response.setStatusCode(HttpStatusCode.OK.getStatusCode());
