@@ -61,12 +61,13 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
 	private ServiceMetadata serviceMetaData;
 	private Client client;
 	private String elasticIndex = "events";
+	private String elasticClusterName = "legodata";
 	
 	public void init(OData odata, ServiceMetadata serviceMetaData) {
 		this.odata = odata;
 		this.serviceMetaData = serviceMetaData;
 		
-		Node node = nodeBuilder().client(true).node();
+		Node node = nodeBuilder().client(true).clusterName(elasticClusterName).node();
 		this.client = node.client();
 		
 	}
