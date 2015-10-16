@@ -1,0 +1,13 @@
+
+<web-app>
+	<servlet>
+  		<servlet-name>LegoServlet</servlet-name>
+  		<servlet-class>lego.odata.web.LegoServlet</servlet-class>
+ 		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+  		<servlet-name>LegoServlet</servlet-name>
+  		<url-pattern>/LegoService.svc/*</url-pattern>
+	</servlet-mapping>
+  <display-name>Archetype Created Web Application</display-name>
+</web-app>
