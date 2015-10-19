@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.olingo.commons.api.data.ContextURL;
@@ -44,6 +45,8 @@ import org.apache.olingo.server.api.uri.queryoption.SelectItem;
 import org.apache.olingo.server.api.uri.queryoption.SelectOption;
 import org.apache.olingo.server.api.uri.queryoption.SkipOption;
 import org.apache.olingo.server.api.uri.queryoption.TopOption;
+import org.apache.olingo.server.api.uri.queryoption.expression.Expression;
+import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitException;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -132,7 +135,7 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
 	    FullQualifiedName fqName = type.getFullQualifiedName();
 		
 	    QueryBuilder queryBuilder = createQueryBuilder(
-                filterOption);
+                filterOption, expandOption);
 	    
 	   
 	    SearchRequestBuilder requestBuilder = client
@@ -182,17 +185,27 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
 		}
 	}
 	
-	public QueryBuilder createQueryBuilder(FilterOption filterOption) {
-	    /*
+	@SuppressWarnings("unchecked")
+	public QueryBuilder createQueryBuilder(FilterOption filterOption, ExpandOption expandOption) {
+	    
+		QueryBuilder queryBuilder = null;
 		if (filterOption != null) {
 	        Expression expression = filterOption.getExpression();
-	        return expression.accept(
-	             new ElasticSearchExpressionVisitor());
-	    } else {
-	    */	
-	        return QueryBuilders.matchAllQuery();
-	    
-	    //}
+	        try {
+	        	queryBuilder = (QueryBuilder)expression.accept(new ElasticSearchExpressionVisitor());
+	        }
+	        catch(ODataApplicationException e ){
+	        	//throw new ODataApplicationException("Error while parsing the request url",0, new Locale("en_US"));
+	        	e.printStackTrace();
+	        }
+	        catch (ExpressionVisitException e){
+	        	//throw new ExpressionVisitException("Error while parsing the request url");
+	        	e.printStackTrace();
+	        }
+	    } else {	
+	        queryBuilder = QueryBuilders.matchAllQuery();
+	    }
+		return queryBuilder;
 	}
 	
 	private Entity convertHitToEntity(SearchHit searchHit, EdmEntityType type){
