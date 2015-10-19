@@ -112,7 +112,8 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
 		  ContextURL contextUrl = ContextURL.with().entitySet(edmEntitySet).build();
 
 		  final String id = request.getRawBaseUri() + "/" + edmEntitySet.getName();
-		  EntityCollectionSerializerOptions opts = EntityCollectionSerializerOptions.with().id(id).contextURL(contextUrl).build();
+		  EntityCollectionSerializerOptions opts = EntityCollectionSerializerOptions.with().id(id).contextURL(contextUrl)
+				  .count(uriInfo.getCountOption()).build();
 		  SerializerResult serializedContent = serializer.entityCollection(serviceMetaData, edmEntityType, entitySet, opts);
 
 		  this.client.close();
@@ -209,14 +210,26 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
 	}
 	
 	private Map <String, Object> convertSearchHit(SearchHit searchHit, EdmEntityType type){
-		Map <String, Object> source = searchHit.sourceAsMap();
 		Map <String, Object> converted = new HashMap <String, Object> ();
+		
+		Map <String, Object> source = searchHit.sourceAsMap();
+		if (source == null){
+			source = new HashMap<String, Object>();
+			// this happens if some specific fields have been chosen
+			// get the fields and fill the source map
+			Map <String,  SearchHitField> fieldsAsMap = searchHit.fields();
+			for (Map.Entry<String, SearchHitField> f: fieldsAsMap.entrySet()){
+				SearchHitField field = f.getValue();
+				Object fieldValue = field.getValue();
+				source.put(f.getKey(), fieldValue);
+			}
+		}
 		
 		for (Map.Entry<String, Object> entry: source.entrySet()){
 			EdmElement currentElement = type.getProperty(entry.getKey());
 			if (currentElement != null){
 				
-				if (currentElement.getType().getName().equals("DateTimeOffset")){
+				if ((currentElement.getType().getName().equals("DateTimeOffset")) && (entry.getValue() != null)){
 					String dateString = entry.getValue().toString();
 					// 2014-08-29T11:21:53.092
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
@@ -229,7 +242,7 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
 					}
 					converted.put(entry.getKey(), date.getTime());
 				}
-				else if (currentElement.getType().getName().equals("Double")){
+				else if ((currentElement.getType().getName().equals("Double")) && (entry.getValue() != null)){
 					String doubleString = entry.getValue().toString();
 					double val = -1;
 					try{
@@ -240,7 +253,7 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
 					}
 					converted.put(entry.getKey(), val);
 				}
-				else{
+				else if (entry.getValue() != null){
 					converted.put(entry.getKey(), entry.getValue());
 				}
 				
