@@ -46,7 +46,7 @@ public class LegoEdmProvider extends CsdlAbstractEdmProvider {
 		    CsdlProperty unitId = new CsdlProperty().setName("unitId").setType(EdmPrimitiveTypeKind.String.getFullQualifiedName());
 		    CsdlProperty description = new CsdlProperty().setName("description").setType(EdmPrimitiveTypeKind.String.getFullQualifiedName());
 		    
-		    CsdlProperty  id = new CsdlProperty().setName("id").setType(EdmPrimitiveTypeKind.String.getFullQualifiedName());
+		    CsdlProperty  id = new CsdlProperty().setName("id").setType(EdmPrimitiveTypeKind.String.getFullQualifiedName()).setMaxLength(20).setNullable(false);
 
 		    // create CsdlPropertyRef for Key element
 		    CsdlPropertyRef propertyRef = new CsdlPropertyRef();
