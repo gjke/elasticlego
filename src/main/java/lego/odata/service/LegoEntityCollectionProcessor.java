@@ -115,6 +115,8 @@ public class LegoEntityCollectionProcessor implements EntityCollectionProcessor 
 		  ContextURL contextUrl = ContextURL.with().entitySet(edmEntitySet).build();
 
 		  final String id = request.getRawBaseUri() + "/" + edmEntitySet.getName();
+		  String acceptHeader = request.getHeader("accept");
+		  request.setHeader("accept", "application/json;odata.metadata=full");
 		  EntityCollectionSerializerOptions opts = EntityCollectionSerializerOptions.with().id(id).contextURL(contextUrl)
 				  .count(uriInfo.getCountOption()).build();
 		  SerializerResult serializedContent = serializer.entityCollection(serviceMetaData, edmEntityType, entitySet, opts);

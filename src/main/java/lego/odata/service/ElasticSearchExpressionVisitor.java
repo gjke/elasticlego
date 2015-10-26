@@ -26,9 +26,13 @@ public class ElasticSearchExpressionVisitor implements ExpressionVisitor {
 			throws ExpressionVisitException, ODataApplicationException {
 		if (BinaryOperatorKind.EQ.equals(operator)){
 			String fieldName = left.toString();
+			if (fieldName.equals("id")){
+				fieldName = "_id";
+			}
 			Object value = right;
 			if (value != null){
-				return QueryBuilders.matchQuery(fieldName, value);
+				
+				return QueryBuilders.matchQuery(fieldName, value.toString().replaceAll("'",""));
 			}
 			else{
 				return QueryBuilders.filteredQuery(QueryBuilders

@@ -9,5 +9,6 @@
   		<servlet-name>LegoServlet</servlet-name>
   		<url-pattern>/LegoService.svc/*</url-pattern>
 	</servlet-mapping>
+	
   <display-name>Archetype Created Web Application</display-name>
 </web-app>
