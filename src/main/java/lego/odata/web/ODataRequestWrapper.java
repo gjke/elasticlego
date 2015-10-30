@@ -8,12 +8,12 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-public class ChangeAcceptHeader extends HttpServletRequestWrapper {
+public class ODataRequestWrapper extends HttpServletRequestWrapper {
 
 	private final String goodAcceptHeader = "odata.metadata=minimal";
 	private final String oDataMetadataFullHeader = "odata.metadata=full";
 	
-	public ChangeAcceptHeader (HttpServletRequest request){
+	public ODataRequestWrapper (HttpServletRequest request){
 		super(request);
 	}
 	
@@ -37,4 +37,29 @@ public class ChangeAcceptHeader extends HttpServletRequestWrapper {
 	public String replaceBadHeader(String value){
 		return value.replace(oDataMetadataFullHeader, goodAcceptHeader);
 	}
+	
+	public String getQueryString(){
+		String original = super.getQueryString();
+		String replaced;
+		if (original != null){
+			replaced = original.replaceAll("\\+", " ");
+		}
+		else{
+			replaced = null;
+		}
+		return replaced;
+	}
+	
+	/*
+	public void replaceAll(StringBuffer sb, String from, String to){
+		 int index = sb.indexOf(from);
+		    while (index != -1)
+		    {
+		        sb.replace(index, index + from.length(), to);
+		        index += to.length(); // Move to the end of the replacement
+		        index = sb.indexOf(from, index);
+		    }
+	}
+	*/
+	
 }
