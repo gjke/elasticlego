@@ -23,7 +23,8 @@ public class LegoServlet extends HttpServlet {
 	  private static final Logger LOG = LoggerFactory.getLogger(LegoServlet.class);
 
 	  protected void service(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
-	    try {
+	    try {	
+	    	
 	      // create odata handler and configure it with CsdlEdmProvider and Processor
 	      OData odata = OData.newInstance();
 	      ServiceMetadata edm = odata.createServiceMetadata(new LegoEdmProvider(), new ArrayList<EdmxReference>());
